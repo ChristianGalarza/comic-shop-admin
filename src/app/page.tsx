@@ -24,6 +24,11 @@ export default function InventoryPage() {
     router.push("publisher");
   };
 
+  const handleCreators = () => {
+    console.log("Ir a creadores...");
+    router.push("creator");
+  };
+
   return (
     <main className="p-6">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
@@ -40,6 +45,12 @@ export default function InventoryPage() {
         variant="secondary"
         size="md"
         onClick={handlePublishers}
+      />
+      <Button
+        label="Creadores"
+        variant="danger"
+        size="md"
+        onClick={handleCreators}
       />
       <InventoryTable data={comics?.data} />
     </main>
