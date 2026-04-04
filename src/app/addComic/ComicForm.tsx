@@ -4,13 +4,42 @@ import { ComicFormData, comicSchema } from "@/types/zod/ComicFormData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { useCreateComic } from "../hooks/createComic";
+import { usePublishers } from "../hooks/usePublishers";
+import { usePerson } from "../hooks/usePerson";
+import { Publisher } from "@/types/Publisher";
+import { Person } from "@/types/Person";
+import SearchableSelect from "@/components/ui/SearchableSelect";
 
 export default function ComicForm() {
+  const { publishers, isLoading, isError } = usePublishers();
+
+  const {
+    person,
+    isLoading: personIsLoading,
+    isError: personIsError,
+  } = usePerson();
+
+  const publisherOptions =
+    publishers?.data?.map((p: Publisher) => ({
+      id: p.id,
+      name: p.name,
+    })) ?? [];
+
+  const writerOptions =
+    person?.data
+      ?.filter((p: Person) => p.isWriter)
+      .map((p: Person) => ({ id: p.id, name: p.name })) ?? [];
+
+  const drawerOptions =
+    person?.data
+      ?.filter((p: Person) => p.isDrawer)
+      .map((p: Person) => ({ id: p.id, name: p.name })) ?? [];
+
   const {
     mutate: createComic,
     isPending,
     isSuccess,
-    isError,
+    isError: createComicError,
   } = useCreateComic();
 
   const {
@@ -21,18 +50,23 @@ export default function ComicForm() {
     reset,
   } = useForm<ComicFormData>({
     resolver: zodResolver(comicSchema),
+    defaultValues: {
+      publisher: 0,
+      writer: 0,
+      drawer: 0,
+    },
   });
   //TODO handleSubmit
   const onSubmit = async (data: ComicFormData) => {
-    event?.preventDefault();
     try {
       const formData = new FormData();
 
       formData.append("title", data.title);
-      formData.append("publisher", data.publisher);
+      formData.append("publisherId", Number(data.publisher).toString());
       formData.append("description", data.description);
-      formData.append("writer", data.writer);
-      formData.append("drawer", data.drawer);
+      formData.append("writerId", Number(data.writer).toString());
+      formData.append("drawerId", Number(data.drawer).toString());
+      formData.append("coverArtistId", Number(data.coverArtist).toString());
       formData.append("price", data.price.toString());
       formData.append("releaseDate", new Date(data.releaseDate).toISOString());
       formData.append("inventory", data.stock.toString());
@@ -47,7 +81,6 @@ export default function ComicForm() {
       });
       //   reset();
     } catch (error) {
-      console.error(error);
       alert("Ocurrió un error al guardar el cómic");
     }
   };
@@ -67,13 +100,22 @@ export default function ComicForm() {
         </div>
         <div>
           <label className="block mb-1 font-medium">Editorial</label>
-          <input
-            {...register("publisher")}
-            className="border rounded w-full p-2"
+          <Controller
+            name="publisher"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect
+                name="publisher"
+                label=""
+                options={publisherOptions}
+                value={field.value ?? 0}
+                onChange={field.onChange}
+                isLoading={isLoading}
+                placeholder="Busca y selecciona una editorial..."
+                error={errors.publisher?.message}
+              />
+            )}
           />
-          {errors.publisher && (
-            <p className="text-red-500 text-sm">{errors.publisher?.message}</p>
-          )}
         </div>
         <div>
           <label className="block mb-1 font-medium">Descripción</label>
@@ -88,25 +130,61 @@ export default function ComicForm() {
         </div>
         <div>
           <label className="block mb-1 font-medium">Escritor</label>
-          <input
-            {...register("writer")}
-            className="border rounded w-full p-2"
+          <Controller
+            name="writer"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect
+                name="writer"
+                label=""
+                options={writerOptions}
+                value={field.value}
+                onChange={field.onChange}
+                isLoading={personIsLoading}
+                placeholder="Busca y selecciona un escritor..."
+                error={errors.writer?.message}
+              />
+            )}
           />
-          {errors.writer && (
-            <p className="text-red-500 text-sm">{errors.writer.message}</p>
-          )}
         </div>
         <div>
           <label className="block mb-1 font-medium">Dibujante</label>
-          <input
-            {...register("drawer")}
-            className="border rounded w-full p-2"
+          <Controller
+            name="drawer"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect
+                name="drawer"
+                label=""
+                options={drawerOptions}
+                value={field.value}
+                onChange={field.onChange}
+                isLoading={personIsLoading}
+                placeholder="Busca y selecciona un dibujante..."
+                error={errors.drawer?.message}
+              />
+            )}
           />
-          {errors.drawer && (
-            <p className="text-red-500 text-sm">{errors.drawer.message}</p>
-          )}
         </div>
-
+        <div>
+          <label className="block mb-1 font-medium">Portada</label>
+          <Controller
+            name="coverArtist"
+            control={control}
+            render={({ field }) => (
+              <SearchableSelect
+                name="coverArtist"
+                label=""
+                options={drawerOptions}
+                value={field.value}
+                onChange={field.onChange}
+                isLoading={personIsLoading}
+                placeholder="Busca y selecciona un artista de portada..."
+                error={errors.coverArtist?.message}
+              />
+            )}
+          />
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="relative">
             <label className="block mb-1 font-medium">Precio</label>

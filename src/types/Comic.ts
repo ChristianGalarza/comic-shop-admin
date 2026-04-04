@@ -1,4 +1,5 @@
 import { Inventory } from "./Inventory";
+import { Person } from "./Person";
 
 export interface Comic {
   id: number;
@@ -7,7 +8,8 @@ export interface Comic {
   price: number;
   imageUrl: string;
   releaseDate: Date;
-  drawer: string;
-  writer: string;
+  drawer: Person;
+  writer: Person;
+  coverArtist: Person;
   inventory?: Inventory;
 }

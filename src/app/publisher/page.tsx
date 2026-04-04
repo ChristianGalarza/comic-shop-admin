@@ -37,7 +37,7 @@ export default function PublisherPage() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {publishers?.data.map((publisher: Publisher) => (
+            {publishers?.data?.map((publisher: Publisher) => (
               <tr key={publisher.id} className="hover:bg-gray-100 transition">
                 <td className="px-6 py-4 text-center">{publisher.id}</td>
                 <td className="px-6 py-4 text-center">{publisher.name}</td>

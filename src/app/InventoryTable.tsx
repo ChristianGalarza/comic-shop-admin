@@ -38,7 +38,9 @@ export default function InventoryTable({ data }: Props) {
                   alt={comic.title}
                   className="w-15 h-25 object-cover rounded"
                 />
-                <span className="font-semibold">{comic.title}</span>
+                <span className="font-semibold">
+                  {comic.title} {comic.coverArtist.name}
+                </span>
               </td>
               <td className="px-6 py-4">${comic.price.toFixed(2)}</td>
               <td className="px-6 py-4">{comic.inventory?.quantity}</td>
