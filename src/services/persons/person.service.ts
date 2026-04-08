@@ -3,7 +3,7 @@ import { comicsAPI } from "../API";
 
 export const PersonService = {
   getAll: async (): Promise<HttpResponse> => {
-    const response = await comicsAPI.get("/person");
+    const response = await comicsAPI.get("/persons");
     return response.data;
   },
 
@@ -12,7 +12,7 @@ export const PersonService = {
     isWriter: boolean;
     isDrawer: boolean;
   }): Promise<HttpResponse> => {
-    const response = await comicsAPI.post("/person", personData);
+    const response = await comicsAPI.post("/persons", personData);
     return response.data;
   },
 };
